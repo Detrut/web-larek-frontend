@@ -1,6 +1,6 @@
 import { IEvents } from "../base/events";
 
-export interface IContacts {
+export interface IContactsForm {
     contactsForm: HTMLFormElement;
     inputAll: HTMLInputElement[];
     button: HTMLButtonElement;
@@ -8,7 +8,7 @@ export interface IContacts {
     render(): HTMLElement;
 }
 
-export class Contacts implements IContacts {
+export class ContactsForm implements IContactsForm {
     contactsForm: HTMLFormElement;
     inputAll: HTMLInputElement[];
     button: HTMLButtonElement;
@@ -30,7 +30,7 @@ export class Contacts implements IContacts {
 
         this.contactsForm.addEventListener('submit', (event: Event) => {
             event.preventDefault();
-            this.events.emit('success:open');
+            this.events.emit('orderStatus:open');
         });
     }
 

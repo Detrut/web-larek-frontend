@@ -61,9 +61,9 @@ interface ICard {
 ```
 interface IUser {
     address: string;
-    tel: string;
-    mail: string;
-    payMethod: string;
+    phone: string;
+    email: string;
+    payment: string;
 }
 ```
 
@@ -101,6 +101,15 @@ interface IBasketModel {
     clearBasket(): void;
     getBasketPrice(): number;
     setSelectedCard(data: ICard): void;
+}
+```
+
+Интерфейс ответа о заказе
+
+```
+interface IOrderResponse {
+    id: string;
+    total: number;
 }
 ```
 
@@ -316,7 +325,7 @@ render(value: number) - метод, отвечающий за подсчет о�
 
 render(data: ICard) - метод отображения карточки товара в превью
 
-#### BasketItem 
+#### Items
 Класс для отображения списка товаров в корзине.
 
 Поля:

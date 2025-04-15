@@ -1,44 +1,34 @@
-export type ApiListResponse<Type> = {
-	total: number;
-	items: Type[];
-};
+import { ApiListResponse, Api } from '../base/api'
+import { IUserForm, IOrderResponse, ICard } from '../../types';
 
-export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+export interface IApiModel {
+  cdn: string;
+  items: ICard[];
+  getListProductCard: () => Promise<ICard[]>;
+  postOrderLot: (order: IUserForm) => Promise<IOrderResponse>;
+}
 
-export class Api {
-	readonly baseUrl: string;
-	protected options: RequestInit;
+export class ApiModel extends Api {
+  cdn: string;
+  items: ICard[];
 
-	constructor(baseUrl: string, options: RequestInit = {}) {
-		this.baseUrl = baseUrl;
-		this.options = {
-			headers: {
-				'Content-Type': 'application/json',
-				...((options.headers as object) ?? {}),
-			},
-		};
-	}
+  constructor(cdn: string, baseUrl: string, options?: RequestInit) {
+    super(baseUrl, options);
+    this.cdn = cdn;
+  }
 
-	protected handleResponse(response: Response): Promise<object> {
-		if (response.ok) return response.json();
-		else
-			return response
-				.json()
-				.then((data) => Promise.reject(data.error ?? response.statusText));
-	}
+  // получаем массив объектов(карточек) с сервера
+  getListProductCard(): Promise<ICard[]> {
+    return this.get('/product').then((data: ApiListResponse<ICard>) =>
+      data.items.map((item) => ({
+        ...item,
+        image: this.cdn + item.image,
+      }))
+    );
+  }
 
-	get(uri: string) {
-		return fetch(this.baseUrl + uri, {
-			...this.options,
-			method: 'GET',
-		}).then(this.handleResponse);
-	}
-
-	post(uri: string, data: object, method: ApiPostMethods = 'POST') {
-		return fetch(this.baseUrl + uri, {
-			...this.options,
-			method,
-			body: JSON.stringify(data),
-		}).then(this.handleResponse);
-	}
+  // получаем ответ от сервера по сделанному заказу
+  postOrderLot(order: any): Promise<IOrderResponse> {
+    return this.post(`/order`, order).then((data: IOrderResponse) => data);
+  }
 }

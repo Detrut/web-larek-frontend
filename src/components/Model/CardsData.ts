@@ -21,6 +21,6 @@ export class CardData implements ICardsData {
 
     setPreview(item: ICard): void {
         this.preview = item;
-        this.events.emit('modalCard:open', item)
+        this.events.emit('preview:open', item)
     }
 }

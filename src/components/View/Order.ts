@@ -23,7 +23,7 @@ export class Order implements IOrder {
         this.buttons.forEach(item => {
           item.addEventListener('click', () => {
             this.payMethod = item.name;
-            events.emit('order:paymentSelection', item);
+            events.emit('order:payMethod', item);
           });
         });
     
@@ -31,7 +31,7 @@ export class Order implements IOrder {
           const target = event.target as HTMLInputElement;
           const field = target.name;
           const value = target.value;
-          this.events.emit(`order:changeAddress`, { field, value });
+          this.events.emit(`order:addressChange`, { field, value });
         });
     
         this.orderForm.addEventListener('submit', (event: Event) => {
@@ -43,8 +43,8 @@ export class Order implements IOrder {
     set payMethod(payMethod: string) {
         this.buttons.forEach(item => {
           item.classList.toggle('button_alt-active', item.name === payMethod);
-        })
-      }
+        });
+    }
 
     set valid(value: boolean) {
       this.submit.disabled = !value;

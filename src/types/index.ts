@@ -9,9 +9,9 @@ export interface ICard {
 
 export interface IUser {
     address: string;
-    tel: string;
-    mail: string;
-    payMethod: string;
+    phone: string;
+    email: string;
+    payment: string;
 }
 
 export interface ICardsData {
@@ -38,5 +38,14 @@ export interface IUserForm extends IUser{
     validateContacts(): boolean;
     getOrder(): object;
 }
+
+export interface IOrderResponse {
+    id: string;
+    total: number;
+}
+
+export interface IActions {
+    onClick: (event: MouseEvent) => void;
+  }
 
 export type FormErrors = Partial<Record<keyof IUserForm, string>>;

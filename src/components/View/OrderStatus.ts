@@ -16,7 +16,7 @@ export class OrderStatus implements IOrderStatus {
         this.status = template.content.querySelector('.order-success').cloneNode(true) as HTMLElement;
         this.description = this.status.querySelector('.order-success__description');
         this.button = this.status.querySelector('.order-success__close');
-        this.button.addEventListener('click', () => {events.emit('success:close')});
+        this.button.addEventListener('click', () => {events.emit('orderStatus:close')});
     }
 
     render(value: number) {

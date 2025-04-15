@@ -16,7 +16,7 @@ export class Preview extends Card implements IRenderCard {
         super(template, events);
         this.text = this._card.querySelector('.card__text');
         this.button = this._card.querySelector('.card__button');
-        this.button.addEventListener('click', () => { this.events.emit('card:addBasket') });
+        this.button.addEventListener('click', () => { this.events.emit('card:add') });
     }
 
     render(data: ICard): HTMLElement {

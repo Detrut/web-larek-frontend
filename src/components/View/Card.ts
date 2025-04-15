@@ -1,4 +1,4 @@
-import { ICard } from "../../types";
+import { ICard, IActions } from "../../types";
 import { IEvents } from "../base/events";
 
 export interface IRenderCard {
@@ -19,12 +19,16 @@ export class Card implements IRenderCard {
         "другое": "other",
     }
 
-    constructor(template: HTMLTemplateElement, protected events: IEvents) {
+    constructor(template: HTMLTemplateElement, protected events: IEvents, actions?: IActions) {
         this._card = template.content.querySelector('.card').cloneNode(true) as HTMLElement;
         this._category = this._card.querySelector('.card__category');
         this._title = this._card.querySelector('.card__title');
         this._image = this._card.querySelector('.card__image');
         this._price = this._card.querySelector('.card__price');
+
+        if (actions?.onClick) {
+          this._card.addEventListener('click', actions.onClick);
+        }
     }
 
     set category(value: string) {
