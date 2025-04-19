@@ -6,8 +6,6 @@ export class UserForm implements IUserForm {
     phone: string;
     payment: string;
     email: string;
-    total: number;
-    items: string[];
     formErrors: FormErrors = {};
 
     constructor(protected events:IEvents) {
@@ -15,8 +13,6 @@ export class UserForm implements IUserForm {
         this.phone = '';
         this.email = '';
         this.payment = '';
-        this.total = 0;
-        this.items = [];
     }
 
     setAddress(field: string, value: string) {
@@ -83,8 +79,6 @@ export class UserForm implements IUserForm {
             email: this.email,
             phone: this.phone,
             address: this.address,
-            total: this.total,
-            items: this.items,
         }
     }
 }

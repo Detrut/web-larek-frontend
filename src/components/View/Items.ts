@@ -29,7 +29,10 @@ export class Items implements IItems {
 		}
 	}
 
-	protected setPrice(value: number) {
+	protected setPrice(value: number | null) {
+		if (value === null) {
+			return 'Не продается'
+		  }
         return String(value) + ' синапсов'
   	}
 

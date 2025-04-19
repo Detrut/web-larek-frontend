@@ -21,6 +21,7 @@ import { Order } from './components/View/Order';
 import { OrderStatus } from './components/View/OrderStatus';
 import { Preview } from './components/View/Preview';
 import { Popup } from './components/View/Popup';
+import { Page } from './components/View/Page';
 
 // Занесение в константы всех темплейтов
 const templateCatalog = document.querySelector('#card-catalog') as HTMLTemplateElement;
@@ -36,10 +37,11 @@ const popupContainer = document.querySelector('#modal-container') as HTMLElement
 
 // Создание классов
 const events = new EventEmitter();
+const page = new Page()
 
 const apiModel = new ApiModel(CDN_URL, API_URL);
 const cardData = new CardData(events);
-const basketModel = new BasketModel();
+const basketModel = new BasketModel(events);
 const userForm = new UserForm(events);
 
 const popup = new Popup(popupContainer, events);
@@ -57,7 +59,7 @@ apiModel.getListProductCard() // Загрузить карточки
 events.on('cards:receive', () => { // Отобразить карточки
     cardData.cards.forEach(el => {
         const card = new Card(templateCatalog, events, {onClick: () => events.emit('card:select', el)});
-        document.querySelector('.gallery').append(card.render(el));
+        page.catalog(card.render(el));
     });
 });
 
@@ -72,7 +74,7 @@ events.on('preview:open', (item: ICard) => { // Попап с превью
     popup.render();
 });
 
-events.on('basket:open', () => { // Открыть корзину
+events.on('basket:change', () => { // Отображение изменений в корзине
     basket.renderSum(basketModel.getBasketPrice());
     let i = 0;
     basket.items = basketModel.items.map((item) => {
@@ -80,6 +82,10 @@ events.on('basket:open', () => { // Открыть корзину
       i = i + 1;
       return items.render(item, i);
     });
+    basket.renderQuantity(basketModel.getQuantity());
+});
+
+events.on('basket:open', () => { // Открыть корзину
     popup.content = basket.render();
     popup.render();
 });
@@ -87,17 +93,18 @@ events.on('basket:open', () => { // Открыть корзину
 events.on('order:open', () => { // Открыть попап с заказом
     popup.content = order.render();
     popup.render();
-    userForm.items = basketModel.items.map(item => item.id);
+    basketModel.itemsList = basketModel.items.map(item => item.id);
 });
 
 events.on('contacts:open', () => { // Открыть попап с контактными данными
-    userForm.total = basketModel.getBasketPrice();
+    basketModel.total = basketModel.getBasketPrice();
     popup.content = contactsForm.render();
     popup.render();
 });
 
 events.on('orderStatus:open', () => { // Статус заказа
-    apiModel.postOrderLot(userForm.getOrder())
+    const orderFull = Object.assign({}, userForm.getOrder(), basketModel.getOrderInfo());
+    apiModel.postOrderLot(orderFull)
       .then(() => {
         const orderStatus = new OrderStatus(templateOrderStatus, events);
         popup.content = orderStatus.render(basketModel.getBasketPrice());
@@ -114,20 +121,12 @@ events.on('orderStatus:close', () => popup.close()); // Закрытие окн�
 // Манипуляции с карточками
 events.on('card:add', () => { // Добавить карточку в корзину
     basketModel.setSelectedCard(cardData.preview);
-    basket.renderQuantity(basketModel.getQuantity());
+    basketModel.removeDublicate();
     popup.close();
 });
 
 events.on('basket:removeCard', (item: ICard) => { // Удалить карточку из корзины
     basketModel.remove(item.id);
-    basket.renderQuantity(basketModel.getQuantity());
-    basket.renderSum(basketModel.getBasketPrice());
-    let i = 0;
-    basket.items = basketModel.items.map((item) => {
-      const basketItem = new Items(templateCard, events, { onClick: () => events.emit('basket:removeCard', item) });
-      i = i + 1;
-      return basketItem.render(item, i);
-    })
 });
 
 // Поля с информацией и способом оплаты
@@ -154,4 +153,14 @@ events.on('error:change', (errors: Partial<IUserForm>) => { // Валидаци�
     const { email, phone } = errors;
     contactsForm.valid = !email && !phone;
     contactsForm.error.textContent = Object.values({phone, email}).filter(i => !!i).join('; ');
+});
+
+// Блокировка и разблокировка прокрутки контента страницы при открытии корзины
+
+events.on('modal:open', () => {
+    popup.locked = true;
+});
+
+events.on('modal:close', () => {
+    popup.locked = false;
 });

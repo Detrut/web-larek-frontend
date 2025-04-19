@@ -1,6 +1,7 @@
 import { createElement } from "../../utils/utils";
 import { IEvents } from "../base/events";
 
+
 export interface IBasket {
   basket: HTMLElement;
   title: HTMLElement;
@@ -27,14 +28,15 @@ export class Basket implements IBasket {
   constructor(template: HTMLTemplateElement, protected events: IEvents) {
     this.basket = template.content.querySelector('.basket').cloneNode(true) as HTMLElement;
     this.title = this.basket.querySelector('.modal__title');
+    this.title.textContent = 'Корзина';
     this.basketList = this.basket.querySelector('.basket__list');
     this.button = this.basket.querySelector('.basket__button');
     this.price = this.basket.querySelector('.basket__price');
     this.basketButton = document.querySelector('.header__basket');
     this.basketCounter = document.querySelector('.header__basket-counter');
     
-    this.button.addEventListener('click', () => { this.events.emit('order:open') });
-    this.basketButton.addEventListener('click', () => { this.events.emit('basket:open') });
+    this.button.addEventListener('click', () => { this.events.emit('order:open')});
+    this.basketButton.addEventListener('click', () => { this.events.emit('basket:open'), this.events.emit('basket:change') });
 
     this.items = [];
   }
@@ -58,7 +60,6 @@ export class Basket implements IBasket {
   }
 
   render() {
-    this.title.textContent = 'Корзина';
     return this.basket;
   }
 }

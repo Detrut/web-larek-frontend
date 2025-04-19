@@ -42,8 +42,11 @@ export class Card implements IRenderCard {
         }
       }
     
-    protected setPrice(value: number): string {
-        return String(value) + ' синапсов'
+    protected setPrice(value: number | null): string {
+      if (value === null) {
+        return 'Не продается'
+      }
+      return String(value) + ' синапсов'
       }
 
     render(data: ICard): HTMLElement {

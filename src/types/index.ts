@@ -22,6 +22,7 @@ export interface ICardsData {
 
 export interface IBasketModel {
     items: ICard[];
+    itemsList: string[];
     getQuantity(): number;
     remove(id: string): void;
     clearBasket(): void;
@@ -30,8 +31,6 @@ export interface IBasketModel {
 }
 
 export interface IUserForm extends IUser{
-    total: number;
-    items: string[];
     setAddress(field: string, value: string): void
     validateAddress(): boolean;
     setOrderData(field: string, value: string): void
@@ -46,6 +45,6 @@ export interface IOrderResponse {
 
 export interface IActions {
     onClick: (event: MouseEvent) => void;
-  }
+}
 
 export type FormErrors = Partial<Record<keyof IUserForm, string>>;

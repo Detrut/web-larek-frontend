@@ -27,6 +27,14 @@ export class Popup implements IPopup {
         this._content.replaceChildren(valeu);
     }
 
+    set locked(value: boolean) {
+        if (value) {
+          this._wrapper.classList.add('page__wrapper_locked');
+        } else {
+          this._wrapper.classList.remove('page__wrapper_locked');
+        }
+      }
+
     open() {
         this.container.classList.add('modal_active');
         this.events.emit('modal:open');

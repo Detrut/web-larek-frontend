@@ -1,9 +1,12 @@
 import {IBasketModel, ICard} from '../../types';
+import { IEvents } from '../base/events';
 
 export class BasketModel implements IBasketModel {
     protected _items: ICard[]; //Список карточек в корзине
+    total: number;
+    itemsList: string[];
 
-    constructor() {
+    constructor(protected events: IEvents) {
         this._items = [];
     }
 
@@ -21,6 +24,7 @@ export class BasketModel implements IBasketModel {
 
     remove(id: string) {
         this._items = this._items.filter(item => item.id !== id);
+        this.events.emit('basket:change');
     }
 
     clearBasket(): void {
@@ -37,5 +41,17 @@ export class BasketModel implements IBasketModel {
 
     setSelectedCard(data: ICard) {
         this._items.push(data);
+    }
+
+    removeDublicate():void {
+        this._items = this._items.filter((value, index, array) => 
+            !array.filter((v, i) => JSON.stringify(value) == JSON.stringify(v) && i < index).length);
+    }
+
+    getOrderInfo() {
+        return {
+            total: this.total,
+            items: this.itemsList,
+        }
     }
 }
